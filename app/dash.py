@@ -56,7 +56,7 @@ with engagement:
         start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
         end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
 
-    st.header(f'Engagement with UNESCO tweets from {start} to {end}')
+    st.header(f'Engagement with UNESCO tweets from: {start.strftime("%B %Y")} to {end.strftime("%B %Y")}')
 
     likes, retweets, replies, quotes = st.columns(4)
 
@@ -81,8 +81,8 @@ with engagement:
     to_plot = engagement_time_series(df)
 
 
-    col2.header('20 most popular hastags')
+    col2.header('20 most popular hastags in this period')
     col2.pyplot(fig)
 
-    col1.header('Time series of hashtags per month')
+    col1.header('Metrics of hashtags per month')
     col1.plotly_chart(to_plot)
