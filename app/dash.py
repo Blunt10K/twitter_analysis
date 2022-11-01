@@ -56,7 +56,7 @@ with engagement:
         start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
         end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
 
-    st.header(f'Engagement with UNESCO tweets from: {start.strftime("%B %Y")} to {end.strftime("%B %Y")}')
+    st.header(f'Engagement with UNESCO from {start.strftime("%B %Y")} to {end.strftime("%B %Y")}')
 
     likes, retweets, replies, quotes = st.columns(4)
 
