@@ -48,8 +48,6 @@ def get_data():
 
 analysis, baseline = get_data()
 
-st.header('Engagement with UNESCO posts')
-
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
 
 with engagement:
@@ -57,6 +55,8 @@ with engagement:
         st.header("Engagement over the following period")
         start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
         end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
+
+    st.header(f'Engagement with UNESCO tweets from {start} to {end}')
 
     likes, retweets, replies, quotes = st.columns(4)
 
