@@ -1,2 +1,4 @@
 .streamlit/secrets.toml
 __pycache__/*
+app/__pycache__/engagement_utils.cpython-39.pyc
+.gitignore
