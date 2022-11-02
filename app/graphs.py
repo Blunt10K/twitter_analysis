@@ -36,15 +36,15 @@ def following_graph(df):
         auto_highlight=True,
         elevation_scale=50,
         pickable=True,
-        elevation_range=[0, 3000],
+        elevation_range=[0, 10000],
         extruded=True,
         coverage=1)
 
-    # scatter = pdk.Layer(
-    #     'ScatterplotLayer',
-    #         data=df,
-    #         get_position=['longitude', 'latitude'],
-    #         get_color='[200, 30, 0, 160]',
-    #         get_radius="followers_count"
-    # )
-    return pdk.Deck(layers=[layer])
+    scatter = pdk.Layer(
+        'ScatterplotLayer',
+            data=df,
+            get_position=['longitude', 'latitude'],
+            get_color='[200, 30, 0, 160]',
+            get_radius="followers_count"
+    )
+    return pdk.Deck(layers=[layer, scatter])

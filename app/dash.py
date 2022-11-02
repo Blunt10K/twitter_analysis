@@ -53,7 +53,14 @@ def get_data():
 
     places = preprocess_places(rows)
 
-    return engagement, baseline, places[~(places['latitude'].isna()) & ~(places['place'].isna())]
+    sheet_url = st.secrets["following_url"]
+    query = f'SELECT * FROM "{sheet_url}"'
+    rows = conn.execute(query, headers=1)
+    rows = rows.fetchall()
+
+    places = preprocess_places(rows, places)
+
+    return engagement, baseline, places
 
 analysis, baseline, places = get_data()
 
@@ -82,11 +89,8 @@ with engagement:
     replies.metric('Avg Replies',f'{round(reply_metric[0],1)}', f'{reply_metric[1]}')
     quotes.metric('Avg Quotes',f'{round(quote_metric[0],1)}', f'{quote_metric[1]}')
 
-    
-
     col1, col2 = st.columns(2)
     
-
     fig = engagement_word_cloud(df)
     to_plot = engagement_time_series(df)
 
@@ -100,4 +104,5 @@ with engagement:
 with following:
     # st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
     # st.plotly_chart(to_plot)
+    st.heading('Geographical breakdown of UNESCO\'s followers')
     st.pydeck_chart(following_graph(places))
