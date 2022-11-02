@@ -54,12 +54,12 @@ def get_data():
 
     places = preprocess_places(rows)
 
-    # sheet_url = st.secrets["following_url"]
-    # query = f'SELECT * FROM "{sheet_url}"'
-    # rows = conn.execute(query, headers=1)
-    # rows = rows.fetchall()
+    sheet_url = st.secrets["following_url"]
+    query = f'SELECT * FROM "{sheet_url}"'
+    rows = conn.execute(query, headers=1)
+    rows = rows.fetchall()
 
-    # places = preprocess_following(rows, places)
+    places = preprocess_following(rows, places)
 
     return engagement, baseline, places
 
@@ -105,5 +105,5 @@ with engagement:
 with following:
     # st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
     # st.plotly_chart(to_plot)
-    st.heading('Geographical breakdown of UNESCO\'s followers')
+    st.header('Geographical breakdown of UNESCO\'s followers')
     st.pydeck_chart(following_graph(places))
