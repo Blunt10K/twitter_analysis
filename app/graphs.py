@@ -53,13 +53,13 @@ def following_graph(df, fos):
             get_radius="radii"
     )
 
-    field_offices = pdk.Layer(
-            'ScatterplotLayer',
-            id = 'field_offices',
-            data=fos,
-            get_position=['longitude', 'latitude'],
-            get_color=[200, 30, 0, 50],
-            get_radius='radii'
-    )
+    # field_offices = pdk.Layer(
+    #         'ScatterplotLayer',
+    #         id = 'field_offices',
+    #         data=fos,
+    #         get_position=['longitude', 'latitude'],
+    #         get_color=[200, 30, 0, 50],
+    #         get_radius='radii'
+    # )
 
-    return pdk.Deck(layers=[followers,field_offices])
+    return pdk.Deck(layers=[followers], map_style = 'light')
