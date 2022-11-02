@@ -53,7 +53,7 @@ def get_data():
 
     places = preprocess_places(rows)
 
-    return engagement, baseline, places
+    return engagement, baseline, places[~(places['latitude'].isna()) & ~(places['place'].isna())]
 
 analysis, baseline, places = get_data()
 
@@ -98,6 +98,6 @@ with engagement:
     col1.plotly_chart(to_plot)
 
 with following:
-    st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
+    # st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
     # st.plotly_chart(to_plot)
-    # st.pydeck_chart(following_graph(places))
+    st.pydeck_chart(following_graph(places))
