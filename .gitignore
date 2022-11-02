@@ -1,9 +1,5 @@
 .streamlit/secrets.toml
-__pycache__/*
-app/__pycache__/engagement_utils.cpython-39.pyc
+app/__pycache__/
 .gitignore
-app/__pycache__/graphs.cpython-39.pyc
-app/__pycache__/places_utils.cpython-39.pyc
-app/__pycache__/graphs.cpython-39.pyc
 explore/.DS_Store
 .DS_Store
