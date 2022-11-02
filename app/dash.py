@@ -38,32 +38,36 @@ def get_data():
     conn = connect_sheets()
 
     sheet_url = st.secrets["tweets_url"]
-    query = f'SELECT * FROM "{sheet_url}"'
+    # query = f'SELECT * FROM "{sheet_url}"'
 
-    rows = conn.execute(query, headers=1)
-    rows = rows.fetchall()
+    # rows = conn.execute(query, headers=1)
+    # rows = rows.fetchall()
     
-    engagement = preprocess_engagement(rows)
+    engagement = preprocess_engagement(conn, sheet_url)
     baseline = engagement.mean(numeric_only=True)
 
     sheet_url = st.secrets["places_url"]
-    query = f'SELECT * FROM "{sheet_url}"'
+    # query = f'SELECT * FROM "{sheet_url}"'
 
-    rows = conn.execute(query, headers=1)
-    rows = rows.fetchall()
+    # rows = conn.execute(query, headers=1)
+    # rows = rows.fetchall()
 
-    places = preprocess_places(rows)
+    places = preprocess_places(conn, sheet_url)
 
-    sheet_url = st.secrets["following_url"]
-    query = f'SELECT * FROM "{sheet_url}"'
-    rows = conn.execute(query, headers=1)
-    rows = rows.fetchall()
+    # sheet_url = st.secrets["following_url"]
+    # query = f'SELECT * FROM "{sheet_url}"'
+    # rows = conn.execute(query, headers=1)
+    # rows = rows.fetchall()
 
-    places = preprocess_following(rows, places)
+    places = preprocess_following(conn, sheet_url, places)
 
-    return engagement, baseline, places
+    sheet_url = st.secrets["fo_url"]
 
-analysis, baseline, places = get_data()
+    fos = preprocess_fo(conn, sheet_url)
+
+    return engagement, baseline, places, fos
+
+analysis, baseline, places, fos = get_data()
 
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
 
@@ -106,4 +110,4 @@ with following:
     # st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
     # st.plotly_chart(to_plot)
     st.header('Geographical breakdown of UNESCO\'s followers')
-    st.pydeck_chart(following_graph(places))
+    st.pydeck_chart(following_graph(places, fos))

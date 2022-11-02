@@ -1,7 +1,11 @@
 import pandas as pd
 
 
-def preprocess_engagement(rows):
+def preprocess_engagement(conn, sheet_url):
+    query = f'SELECT * FROM "{sheet_url}"'
+    rows = conn.execute(query, headers=1)
+    rows = rows.fetchall()
+    
     df = pd.DataFrame(rows)
     
     df['created_at'] = pd.to_datetime(df['created_at'])

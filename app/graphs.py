@@ -28,7 +28,7 @@ def engagement_time_series(df):
 
     return to_plot
 
-def following_graph(df):
+def following_graph(df, fos):
     layer = pdk.Layer(
         'HexagonLayer',
         df,
@@ -40,7 +40,7 @@ def following_graph(df):
         extruded=True,
         coverage=1)
 
-    scatter = pdk.Layer(
+    followers = pdk.Layer(
         'ScatterplotLayer',
             data=df,
             radius_scale=5,
@@ -51,4 +51,13 @@ def following_graph(df):
             get_color='[0, 119, 212, 160]',
             get_radius="radii"
     )
-    return pdk.Deck(layers=[layer,scatter])
+
+    field_offices = pdk.Layer(
+        'ScatterplotLayer',
+            data=fos,
+            get_position=['longitude', 'latitude'],
+            get_color='[200, 30, 0, 50]',
+            get_radius='radii'
+    )
+
+    return pdk.Deck(layers=[layer,followers,field_offices])
