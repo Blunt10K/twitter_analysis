@@ -48,7 +48,7 @@ def following_graph(df):
             radius_max_pixels=100,
             line_width_min_pixels=1,
             get_position=['longitude', 'latitude'],
-            get_color='[200, 30, 0, 160]',
+            get_color='[0, 119, 212, 160]',
             get_radius="radii"
     )
     return pdk.Deck(layers=[layer,scatter])
