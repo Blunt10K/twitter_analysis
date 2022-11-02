@@ -19,7 +19,7 @@ def preprocess_fo(conn, sheet_url):
 
     df = pd.DataFrame(rows)
     
-    df.columns = [i.lower for i in df.columns]
+    df.columns = [i.lower() for i in df.columns]
     df['radii'] = 500000
 
     return df
