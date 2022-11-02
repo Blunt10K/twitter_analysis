@@ -36,14 +36,14 @@ def following_graph(df):
         auto_highlight=True,
         elevation_scale=50,
         pickable=True,
-        elevation_range=[0, 10000],
+        elevation_range=[0, 1000],
         extruded=True,
         coverage=1)
 
     scatter = pdk.Layer(
         'ScatterplotLayer',
             data=df,
-            radius_scale=1,
+            radius_scale=5,
             radius_min_pixels=1,
             radius_max_pixels=100,
             line_width_min_pixels=1,
