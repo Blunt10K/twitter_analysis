@@ -1,7 +1,7 @@
 from wordcloud import WordCloud
 import plotly.express as px
 import matplotlib.pyplot as plt
-
+import pydeck as pdk
 
 def engagement_word_cloud(df):
     wc_data = df.groupby('hashtags').sum(numeric_only=True)
@@ -27,3 +27,24 @@ def engagement_time_series(df):
     to_plot.update_yaxes(zeroline = True)
 
     return to_plot
+
+def following_graph(df):
+    layer = pdk.Layer(
+        'HexagonLayer',
+        df,
+        get_position=["longitude", "latitude"],
+        auto_highlight=True,
+        elevation_scale=50,
+        pickable=True,
+        elevation_range=[0, 3000],
+        extruded=True,
+        coverage=1)
+
+    # scatter = pdk.Layer(
+    #     'ScatterplotLayer',
+    #         data=df,
+    #         get_position=['longitude', 'latitude'],
+    #         get_color='[200, 30, 0, 160]',
+    #         get_radius="followers_count"
+    # )
+    return pdk.Deck(layers=[layer])

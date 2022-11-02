@@ -2,3 +2,6 @@
 __pycache__/*
 app/__pycache__/engagement_utils.cpython-39.pyc
 .gitignore
+app/__pycache__/graphs.cpython-39.pyc
+app/__pycache__/places_utils.cpython-39.pyc
+app/__pycache__/graphs.cpython-39.pyc

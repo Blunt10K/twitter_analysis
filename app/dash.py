@@ -6,6 +6,7 @@ from engagement_utils import *
 from graphs import *
 from google.oauth2 import service_account
 from gsheetsdb import connect
+from places_utils import *
 
 
 st.set_page_config(page_title='UNESCO Twitter presence',layout='wide')
@@ -33,28 +34,37 @@ def connect_sheets():
 
 st.cache(persist=True)
 def get_data():
-    sheet_url = st.secrets["tweets_url"]
     conn = connect_sheets()
 
+    sheet_url = st.secrets["tweets_url"]
     query = f'SELECT * FROM "{sheet_url}"'
 
     rows = conn.execute(query, headers=1)
     rows = rows.fetchall()
     
-    df = preprocess_engagement(rows)
-    baseline = df.mean(numeric_only=True)
+    engagement = preprocess_engagement(rows)
+    baseline = engagement.mean(numeric_only=True)
 
-    return df, baseline
+    sheet_url = st.secrets["places_url"]
+    query = f'SELECT * FROM "{sheet_url}"'
 
-analysis, baseline = get_data()
+    rows = conn.execute(query, headers=1)
+    rows = rows.fetchall()
+
+    places = preprocess_places(rows)
+
+    return engagement, baseline, places
+
+analysis, baseline, places = get_data()
 
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
 
-with engagement:
-    with st.sidebar:
+with st.sidebar:
         st.header("Engagement over the following period")
         start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
         end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
+
+with engagement:
 
     st.header(f'Engagement with UNESCO from {start.strftime("%B %Y")} to {end.strftime("%B %Y")}')
 
@@ -86,3 +96,8 @@ with engagement:
 
     col1.header('Metrics of hashtags per month')
     col1.plotly_chart(to_plot)
+
+with following:
+    st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
+    # st.plotly_chart(to_plot)
+    # st.pydeck_chart(following_graph(places))
