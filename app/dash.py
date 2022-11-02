@@ -54,7 +54,7 @@ def get_data():
 
     places = preprocess_places(conn, sheet_url)
 
-    # sheet_url = st.secrets["following_url"]
+    sheet_url = st.secrets["following_url"]
     # query = f'SELECT * FROM "{sheet_url}"'
     # rows = conn.execute(query, headers=1)
     # rows = rows.fetchall()
