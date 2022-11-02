@@ -7,5 +7,7 @@ def preprocess_following(rows, places):
 
     df = df.groupby(['longitude','latitude'], as_index = False).sum(numeric_only=True)
 
+    df['radii'] = 10*(df['followers_count']/df['followers_count'].max())
+
 
     return df
