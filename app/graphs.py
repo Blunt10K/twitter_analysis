@@ -60,4 +60,4 @@ def following_graph(df, fos):
     #         get_radius='radii'
     # )
 
-    return pdk.Deck(layers=[layer,followers])
+    return pdk.Deck(layers=[followers])
