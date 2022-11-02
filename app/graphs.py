@@ -43,6 +43,10 @@ def following_graph(df):
     scatter = pdk.Layer(
         'ScatterplotLayer',
             data=df,
+            radius_scale=7,
+            radius_min_pixels=1,
+            radius_max_pixels=100,
+            line_width_min_pixels=1,
             get_position=['longitude', 'latitude'],
             get_color='[200, 30, 0, 160]',
             get_radius="followers_count"
