@@ -25,44 +25,23 @@ def connect_sheets():
     )
     return connect(credentials=credentials)
 
-# @st.experimental_memo(ttl=600)
-# def run_query(query):
-    
-#     names = list(df['Resource'].unique())
-#     names.sort()
-
-#     return names, df
 
 st.cache(persist=True)
 def get_data():
     conn = connect_sheets()
 
     sheet_url = st.secrets["tweets_url"]
-    # query = f'SELECT * FROM "{sheet_url}"'
-
-    # rows = conn.execute(query, headers=1)
-    # rows = rows.fetchall()
-    
     engagement = preprocess_engagement(conn, sheet_url)
     baseline = engagement.mean(numeric_only=True)
 
+
     sheet_url = st.secrets["places_url"]
-    # query = f'SELECT * FROM "{sheet_url}"'
-
-    # rows = conn.execute(query, headers=1)
-    # rows = rows.fetchall()
-
     places = preprocess_places(conn, sheet_url)
 
     sheet_url = st.secrets["following_url"]
-    # query = f'SELECT * FROM "{sheet_url}"'
-    # rows = conn.execute(query, headers=1)
-    # rows = rows.fetchall()
-
     places = preprocess_following(conn, sheet_url, places)
 
     sheet_url = st.secrets["fo_url"]
-
     fos = preprocess_fo(conn, sheet_url)
 
     return engagement, baseline, places, fos
@@ -107,7 +86,5 @@ with engagement:
     col1.plotly_chart(to_plot)
 
 with following:
-    # st.write(places[~(places['latitude'].isna()) & ~(places['place'].isna())])
-    # st.plotly_chart(to_plot)
     st.header('Geographical breakdown of UNESCO\'s followers')
     st.pydeck_chart(following_graph(places, fos))
