@@ -41,23 +41,25 @@ def following_graph(df, fos):
     #     coverage=1)
 
     followers = pdk.Layer(
-        'ScatterplotLayer',
+            'ScatterplotLayer',
             data=df,
+            id = 'followers',
             radius_scale=5,
             radius_min_pixels=1,
             radius_max_pixels=100,
             line_width_min_pixels=1,
             get_position=['longitude', 'latitude'],
-            get_color='[0, 119, 212, 160]',
+            get_color=[0, 119, 212, 160],
             get_radius="radii"
     )
 
-    # field_offices = pdk.Layer(
-    #     'ScatterplotLayer',
-    #         data=fos,
-    #         get_position=['longitude', 'latitude'],
-    #         get_color='[200, 30, 0, 50]',
-    #         get_radius='radii'
-    # )
+    field_offices = pdk.Layer(
+            'ScatterplotLayer',
+            id = 'field_offices',
+            data=fos,
+            get_position=['longitude', 'latitude'],
+            get_color=[200, 30, 0, 50],
+            get_radius='radii'
+    )
 
-    return pdk.Deck(layers=[layer,followers])
+    return pdk.Deck(layers=[followers,field_offices])
