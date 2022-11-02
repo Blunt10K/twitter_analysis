@@ -7,6 +7,7 @@ from graphs import *
 from google.oauth2 import service_account
 from gsheetsdb import connect
 from places_utils import *
+from following_utils import *
 
 
 st.set_page_config(page_title='UNESCO Twitter presence',layout='wide')
@@ -58,7 +59,7 @@ def get_data():
     rows = conn.execute(query, headers=1)
     rows = rows.fetchall()
 
-    places = preprocess_places(rows, places)
+    places = preprocess_following(rows, places)
 
     return engagement, baseline, places
 
