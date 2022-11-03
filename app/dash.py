@@ -26,7 +26,7 @@ def connect_sheets():
     return connect(credentials=credentials)
 
 
-st.cache(persist=True)
+st.experimental_memo(persist='disk')
 def get_data():
     conn = connect_sheets()
 
@@ -51,6 +51,8 @@ engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment
 
 # with st.sidebar:
 #     st.header("Engagement over the following period")
+#     start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
+#     end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
     
 
 with engagement:
