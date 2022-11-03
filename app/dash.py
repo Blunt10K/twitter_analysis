@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 from gsheetsdb import connect
 from places_utils import *
 from following_utils import *
-
+import pytz
 
 st.set_page_config(page_title='UNESCO Twitter presence',layout='wide')
 
@@ -34,7 +34,6 @@ def get_data():
     engagement = preprocess_engagement(conn, sheet_url)
     baseline = engagement.mean(numeric_only=True)
 
-
     sheet_url = st.secrets["places_url"]
     places = preprocess_places(conn, sheet_url)
 
@@ -50,19 +49,21 @@ analysis, baseline, places, fos = get_data()
 
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
 
-with st.sidebar:
-        st.header("Engagement over the following period")
-        start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
-        end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
+# with st.sidebar:
+#     st.header("Engagement over the following period")
+    
 
 with engagement:
+    st.header('Engagement with UNESCO from:')
+    start_date, end_date = st.columns(2)
 
-    st.header(f'Engagement with UNESCO from {start.strftime("%B %Y")} to {end.strftime("%B %Y")}')
+    start = start_date.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
+    end = end_date.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
 
     likes, retweets, replies, quotes = st.columns(4)
 
-    start = dt.fromordinal(start.toordinal()).astimezone()
-    end = dt.fromordinal(end.toordinal()).astimezone()
+    start = dt.fromordinal(start.toordinal()).astimezone(pytz.utc)
+    end = dt.fromordinal(end.toordinal()).astimezone(pytz.utc)
 
     df = mutate_engagement_df(analysis, start, end)
 
@@ -76,7 +77,7 @@ with engagement:
     col1, col2 = st.columns(2)
     
     fig = engagement_word_cloud(df)
-    to_plot = engagement_time_series(df)
+    to_plot = engagement_time_series(df,start,end)
 
 
     col2.header('20 most popular hastags in this period')
@@ -86,5 +87,5 @@ with engagement:
     col1.plotly_chart(to_plot)
 
 with following:
-    st.header('Geographical breakdown of UNESCO\'s followers')
+    st.header('Geographical coverage of UNESCO\'s followers overlaid with field offices/institutions')
     st.pydeck_chart(following_graph(places, fos))

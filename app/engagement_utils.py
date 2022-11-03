@@ -11,7 +11,7 @@ def preprocess_engagement(conn, sheet_url):
     df['created_at'] = pd.to_datetime(df['created_at'])
     df['hashtags'].fillna('',inplace = True)
     df['bucket'] = df['created_at'].dt.strftime('%B, %Y')
-    df['bucket_idx'] = pd.to_datetime(df['bucket'],format = '%B, %Y')
+    df['bucket_idx'] = pd.to_datetime(df['bucket'],format = '%B, %Y',utc = True)
 
     return df
 
