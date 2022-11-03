@@ -16,8 +16,8 @@ def engagement_word_cloud(df):
 
     return fig
 
-def engagement_time_series(df, start, end):
-    rf = df[df['bucket_idx'].between(start,end)].groupby(['bucket','bucket_idx','hashtags'],as_index=False).sum(numeric_only=True).sort_values('bucket_idx')
+def engagement_time_series(df):
+    rf = df.groupby(['bucket','bucket_idx','hashtags'],as_index=False).sum(numeric_only=True).sort_values('bucket_idx')
     to_plot = px.scatter(rf,x='like_count', y='retweet_count',size = 'reply_count', size_max = 55,color = 'quote_count',
         animation_group='hashtags',animation_frame='bucket',width = 800, height = 500,hover_name='hashtags',
         color_continuous_scale = px.colors.sequential.Agsunset, range_x=[-1000,rf['like_count'].max()+1000],

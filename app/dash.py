@@ -76,8 +76,8 @@ with engagement:
 
     col1, col2 = st.columns(2)
     
-    fig = engagement_word_cloud(df)
-    to_plot = engagement_time_series(df,start,end)
+    fig = engagement_word_cloud(df[df['bucket_idx'].between(start,end)])
+    to_plot = engagement_time_series(df[df['bucket_idx'].between(start,end)])
 
 
     col2.header('20 most popular hastags in this period')
