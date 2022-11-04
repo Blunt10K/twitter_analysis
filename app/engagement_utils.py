@@ -16,17 +16,16 @@ def preprocess_engagement(conn, sheet_url):
 
     return df
 
-def mutate_engagement_df(analysis, start, end):
+def mutate_engagement_df(df, start, end):
 
-    df = analysis[analysis['created_at'].between(start,end)]
-    return df[df['hashtags'].str.contains(r'[\w\d]+',regex = True)]
+    return df[(df['created_at'].between(start,end)) & (df['hashtags'].str.contains(r'[\w\d]+',regex = True))]
 
 def calc_engagement_metrics(df, baseline):
 
-    likes_view = df['like_count'].mean()
-    retweet_view = df['retweet_count'].mean()
-    reply_view = df['reply_count'].mean()
-    quote_view = df['quote_count'].mean()
+    likes_view = round(df['like_count'].mean(), 1)
+    retweet_view = round(df['retweet_count'].mean(), 1)
+    reply_view = round(df['reply_count'].mean(), 1)
+    quote_view = round(df['quote_count'].mean(), 1)
 
 
     likes_delta = round(likes_view - baseline["like_count"], 1)

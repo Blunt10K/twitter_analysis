@@ -26,34 +26,27 @@ def connect_sheets():
     return connect(credentials=credentials)
 
 
-st.experimental_memo(persist='disk')
-def get_data(_conn, tweets_url, places_url, following_url, fo_url):
-    
-    # sheet_url = queries["tweets_url"]
+@st.experimental_memo(persist='disk',show_spinner=True)
+def load_data(_conn):
 
-    engagement = preprocess_engagement(_conn, tweets_url)
-    baseline = engagement.mean(numeric_only=True)
+    engagement = preprocess_engagement(_conn, st.secrets['tweets_url'])
+    baseline = engagement.mean(numeric_only=True).round(1)
 
-    # sheet_url = queries["places_url"]
-    places = preprocess_places(_conn, places_url)
+    places = preprocess_places(_conn, st.secrets['places_url'])
 
-    # sheet_url = queries["following_url"]
-    places = preprocess_following(_conn, following_url, places)
+    places = preprocess_following(_conn, st.secrets['following_url'], places)
 
-    # sheet_url = queries["fo_url"]
-    fos = preprocess_fo(_conn, fo_url)
+    fos = preprocess_fo(_conn, st.secrets['fo_url'])
 
     return engagement, baseline, places, fos
 
 conn = connect_sheets()
-# queries = st.secrets['gsheets']
-tweets_url = st.secrets['tweets_url']
-places_url = st.secrets['places_url']
-following_url = st.secrets['following_url']
-fo_url = st.secrets['fo_url']
 
-analysis, baseline, places, fos = get_data(conn,tweets_url, places_url, following_url, fo_url)
+analysis, baseline, places, fos = load_data(conn)
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
+
+# st.session_state['start_date'] = analysis['created_at'].min()
+# st.session_state['end_date'] = analysis['created_at'].max()
 
 # with st.sidebar:
 #     st.header("Engagement over the following period")
@@ -65,17 +58,18 @@ with engagement:
     st.header('Engagement with UNESCO from:')
     start_date, end_date = st.columns(2)
 
-    start = start_date.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
-    end = end_date.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
+    start = start_date.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),
+            max(analysis['created_at']),key='start_date')
+    end = end_date.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']),key='end_date')
 
     likes, retweets, replies, quotes = st.columns(4)
 
     start = dt.fromordinal(start.toordinal()).astimezone(pytz.utc)
     end = dt.fromordinal(end.toordinal()).astimezone(pytz.utc)
 
-    # df = mutate_engagement_df(analysis, start, end)
+    df = mutate_engagement_df(analysis, start, end)
 
-    likes_metric, retweet_metric, reply_metric, quote_metric = calc_engagement_metrics(mutate_engagement_df(analysis, start, end), baseline)
+    likes_metric, retweet_metric, reply_metric, quote_metric = calc_engagement_metrics(df, baseline)
 
     likes.metric('Avg Likes',f'{round(likes_metric[0],1)}', f'{likes_metric[1]}')
     retweets.metric('Avg Retweets',f'{round(retweet_metric[0],1)}', f'{retweet_metric[1]}')
@@ -84,8 +78,8 @@ with engagement:
 
     col1, col2 = st.columns(2)
     
-    fig = engagement_word_cloud(mutate_engagement_df(analysis, start, end))#df[df['bucket_idx'].between(start,end)])
-    to_plot = engagement_time_series(mutate_engagement_df(analysis, start, end))#df[df['bucket_idx'].between(start,end)])
+    fig = engagement_word_cloud(df[df['bucket_idx'].between(start,end)])
+    to_plot = engagement_time_series(df[df['bucket_idx'].between(start,end)])
 
 
     col2.header('20 most popular hastags in this period')
