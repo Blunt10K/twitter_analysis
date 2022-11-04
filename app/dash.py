@@ -27,26 +27,32 @@ def connect_sheets():
 
 
 st.experimental_memo(persist='disk')
-def get_data():
-    conn = connect_sheets()
+def get_data(_conn, tweets_url, places_url, following_url, fo_url):
+    
+    # sheet_url = queries["tweets_url"]
 
-    sheet_url = st.secrets["tweets_url"]
-    engagement = preprocess_engagement(conn, sheet_url)
+    engagement = preprocess_engagement(_conn, tweets_url)
     baseline = engagement.mean(numeric_only=True)
 
-    sheet_url = st.secrets["places_url"]
-    places = preprocess_places(conn, sheet_url)
+    # sheet_url = queries["places_url"]
+    places = preprocess_places(_conn, places_url)
 
-    sheet_url = st.secrets["following_url"]
-    places = preprocess_following(conn, sheet_url, places)
+    # sheet_url = queries["following_url"]
+    places = preprocess_following(_conn, following_url, places)
 
-    sheet_url = st.secrets["fo_url"]
-    fos = preprocess_fo(conn, sheet_url)
+    # sheet_url = queries["fo_url"]
+    fos = preprocess_fo(_conn, fo_url)
 
     return engagement, baseline, places, fos
 
-analysis, baseline, places, fos = get_data()
+conn = connect_sheets()
+# queries = st.secrets['gsheets']
+tweets_url = st.secrets['tweets_url']
+places_url = st.secrets['places_url']
+following_url = st.secrets['following_url']
+fo_url = st.secrets['fo_url']
 
+analysis, baseline, places, fos = get_data(conn,tweets_url, places_url, following_url, fo_url)
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
 
 # with st.sidebar:
@@ -67,9 +73,9 @@ with engagement:
     start = dt.fromordinal(start.toordinal()).astimezone(pytz.utc)
     end = dt.fromordinal(end.toordinal()).astimezone(pytz.utc)
 
-    df = mutate_engagement_df(analysis, start, end)
+    # df = mutate_engagement_df(analysis, start, end)
 
-    likes_metric, retweet_metric, reply_metric, quote_metric = calc_engagement_metrics(df, baseline)
+    likes_metric, retweet_metric, reply_metric, quote_metric = calc_engagement_metrics(mutate_engagement_df(analysis, start, end), baseline)
 
     likes.metric('Avg Likes',f'{round(likes_metric[0],1)}', f'{likes_metric[1]}')
     retweets.metric('Avg Retweets',f'{round(retweet_metric[0],1)}', f'{retweet_metric[1]}')
@@ -78,8 +84,8 @@ with engagement:
 
     col1, col2 = st.columns(2)
     
-    fig = engagement_word_cloud(df[df['bucket_idx'].between(start,end)])
-    to_plot = engagement_time_series(df[df['bucket_idx'].between(start,end)])
+    fig = engagement_word_cloud(mutate_engagement_df(analysis, start, end))#df[df['bucket_idx'].between(start,end)])
+    to_plot = engagement_time_series(mutate_engagement_df(analysis, start, end))#df[df['bucket_idx'].between(start,end)])
 
 
     col2.header('20 most popular hastags in this period')

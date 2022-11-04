@@ -1,11 +1,10 @@
 import pandas as pd
 
 def preprocess_places(conn, sheet_url):
-
     query = f'SELECT * FROM "{sheet_url}"'
-
     rows = conn.execute(query, headers=1)
     rows = rows.fetchall()
+    
 
     df = pd.DataFrame(rows)
     df = df.dropna()
