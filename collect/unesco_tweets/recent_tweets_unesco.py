@@ -2,12 +2,13 @@ import tweepy
 from os import environ,listdir
 import json
 from os.path import expanduser, join as osjoin
+from utils import setup_api
 
 
 
-def setup_api():
-    token = environ.get('BEARER_TOKEN')
-    return tweepy.Client(bearer_token = token,wait_on_rate_limit=True)
+# def setup_api():
+#     token = environ.get('BEARER_TOKEN')
+#     return tweepy.Client(bearer_token = token,wait_on_rate_limit=True)
 
 def build_filename(number):
     
