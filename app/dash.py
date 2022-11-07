@@ -26,7 +26,7 @@ def connect_sheets():
     return connect(credentials=credentials)
 
 
-@st.experimental_memo(ttl=3600*12,show_spinner=True)
+@st.experimental_memo(ttl=3600,show_spinner=True)
 def load_data(_conn):
 
     engagement = preprocess_engagement(_conn, st.secrets['tweets_url'])
