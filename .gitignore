@@ -3,3 +3,5 @@ app/__pycache__/
 .gitignore
 explore/.DS_Store
 .DS_Store
+twitter_jupyter/
+explore/tweets - unesco_tweets.csv
