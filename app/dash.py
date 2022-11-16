@@ -109,5 +109,5 @@ with sentiment:
 
 with events:
     pic1, pic2 = st.columns(2)
-    pic2.image('app/images/call_to_action.png', caption = 'Mobilisation of UNESCO staff')
-    pic1.image('app/images/malaysia.png', caption = 'Flooding in Malaysia')
+    pic2.image('https://raw.githubusercontent.com/Blunt10K/twitter_analysis/main/app/images/call_to_action.png', caption = 'Mobilisation of UNESCO staff')
+    pic1.image('https://raw.githubusercontent.com/Blunt10K/twitter_analysis/main/app/images/malaysia.png', caption = 'Flooding in Malaysia')
