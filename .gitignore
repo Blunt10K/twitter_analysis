@@ -5,3 +5,7 @@ explore/.DS_Store
 .DS_Store
 twitter_jupyter/
 explore/tweets - unesco_tweets.csv
+explore/sentiment - mentions.csv
+.gitignore
+.gitignore
+explore/sentiment - root_convos.csv

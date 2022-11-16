@@ -1,15 +1,38 @@
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 import plotly.express as px
 import matplotlib.pyplot as plt
 import pydeck as pdk
+import re
+
+template = 'plotly_white'
+stop_words = STOPWORDS
+stop_words.add('say')
+stop_words.add('day')
+stop_words.add('now')
+stop_words.add('amp')
+
 
 def engagement_word_cloud(df):
     wc_data = df.groupby('hashtags').sum(numeric_only=True)
     wc = wc_data.to_dict()['like_count']
 
     cloud = WordCloud(min_word_length=3, colormap = 'winter',max_words=20,width = 400, height = 200,prefer_horizontal = 0.95,
-            background_color = 'white',collocations = False).generate_from_frequencies(wc)
+            background_color = 'white',collocations = False, stopwords=STOPWORDS).generate_from_frequencies(wc)
     
+    fig, ax = plt.subplots()
+    ax.axis('off')
+    ax.imshow(cloud)
+
+    return fig
+
+def sentiment_word_cloud(df):
+    text = ' '.join(df['text'])
+    text = re.sub(r'[^a-zA-Z0-9\s]','', text)
+    
+    cloud = WordCloud(min_word_length=3, colormap = 'winter',max_words=100,#width = 400, height = 200,
+    prefer_horizontal = 0.95,
+            background_color = 'white',collocations = False, stopwords=stop_words).generate(text)
+
     fig, ax = plt.subplots()
     ax.axis('off')
     ax.imshow(cloud)
@@ -50,3 +73,13 @@ def following_graph(df, fos):
 
 
     return pdk.Deck(layers=[followers, field_offices], map_style = 'light')
+
+def sent_dist(df):
+    cat_orders = {'sentiment':['very negative','negative','neutral','positive','very positive']}
+    colors = px.colors.qualitative.Plotly
+    colour_map = {'very negative':colors[1],'negative':colors[4],'neutral':colors[0],
+                  'positive':colors[5],'very positive':colors[2]}
+
+
+    return (px.histogram(df,x='sentiment',color='sentiment',category_orders=cat_orders,color_discrete_map=colour_map,template=template)
+            .update_layout(showlegend = False, title = 'Sentiment distribution of UNESCO',title_x=0.5))

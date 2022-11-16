@@ -1,5 +1,4 @@
 import streamlit as st
-import plotly.io as pio
 from datetime import datetime as dt
 from datetime import timedelta as td
 from engagement_utils import *
@@ -8,11 +7,11 @@ from google.oauth2 import service_account
 from gsheetsdb import connect
 from places_utils import *
 from following_utils import *
+from sentiment_utils import *
 import pytz
 
 st.set_page_config(page_title='UNESCO Twitter presence',layout='wide')
 
-pio.templates.default = 'plotly_white'
 
 @st.experimental_singleton()
 def connect_sheets():
@@ -38,11 +37,13 @@ def load_data(_conn):
 
     fos = preprocess_fo(_conn, st.secrets['fo_url'])
 
-    return engagement, baseline, places, fos
+    mentions, convo_sentiment = preprocess_sentiment(_conn, st.secrets['ment_url'],st.secrets['roots_url'])
+
+    return engagement, baseline, places, fos, mentions, convo_sentiment
 
 conn = connect_sheets()
 
-analysis, baseline, places, fos = load_data(conn)
+analysis, baseline, places, fos, mentions, convo_sentiment = load_data(conn)
 engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
 
 # st.session_state['start_date'] = analysis['created_at'].min()
@@ -91,3 +92,18 @@ with engagement:
 with following:
     st.header('Geographical coverage of UNESCO\'s followers overlaid with field offices/institutions')
     st.pydeck_chart(following_graph(places, fos))
+
+sentiment_order = ['very negative','negative','neutral','positive','very positive']
+with sentiment:
+    selection = st.radio('Sentiment category', sentiment_order, horizontal = True)
+    sentiment_dist, word_cloud = st.columns(2) 
+
+    convo_ids = mentions[mentions['sentiment']==selection]['conversation_id'].unique()
+
+    to_plot = sent_dist(mentions)
+
+    sentiment_dist.plotly_chart(to_plot)
+
+    fig = sentiment_word_cloud(convo_sentiment[convo_sentiment['conversation_id'].isin(convo_ids)])
+
+    word_cloud.pyplot(fig)
