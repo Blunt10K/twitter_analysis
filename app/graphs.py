@@ -28,7 +28,7 @@ def engagement_word_cloud(df):
 def sentiment_word_cloud(df):
     text = ' '.join(df['text'])
     text = re.sub(r'[^a-zA-Z0-9\s]','', text)
-    
+
     cloud = WordCloud(min_word_length=3, colormap = 'winter',max_words=100,#width = 400, height = 200,
     prefer_horizontal = 0.95,
             background_color = 'white',collocations = False, stopwords=stop_words).generate(text)
@@ -74,7 +74,7 @@ def following_graph(df, fos):
 
     return pdk.Deck(layers=[followers, field_offices], map_style = 'light')
 
-def sent_dist(df):
+def sentiment_distribution(df):
     cat_orders = {'sentiment':['very negative','negative','neutral','positive','very positive']}
     colors = px.colors.qualitative.Plotly
     colour_map = {'very negative':colors[1],'negative':colors[4],'neutral':colors[0],

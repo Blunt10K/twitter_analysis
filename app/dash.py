@@ -100,7 +100,7 @@ with sentiment:
 
     convo_ids = mentions[mentions['sentiment']==selection]['conversation_id'].unique()
 
-    to_plot = sent_dist(mentions)
+    to_plot = sentiment_distribution(mentions)
 
     sentiment_dist.plotly_chart(to_plot)
 
