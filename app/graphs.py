@@ -89,5 +89,6 @@ def sentiment_distribution(df):
 
     title = "Sentiment distribution of UNESCO's mentions"
 
-    return (px.histogram(df,x='sentiment',color='sentiment',category_orders=cat_orders,color_discrete_map=colour_map,template=template)
+    return (px.histogram(df,x='sentiment',color='sentiment',category_orders=cat_orders,
+    color_discrete_map=colour_map,template=template,width = 800, height = 500)
             .update_layout(showlegend = False, title = title,title_x=0.5))
