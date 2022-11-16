@@ -95,15 +95,16 @@ with following:
 
 sentiment_order = ['very negative','negative','neutral','positive','very positive']
 with sentiment:
-    selection = st.radio('Sentiment category', sentiment_order, horizontal = True)
+    
     sentiment_dist, word_cloud = st.columns(2) 
 
-    convo_ids = mentions[mentions['sentiment']==selection]['conversation_id'].unique()
 
     to_plot = sentiment_distribution(mentions)
 
     sentiment_dist.plotly_chart(to_plot)
 
+    selection = word_cloud.radio('Sentiment category', sentiment_order, horizontal = True)
+    convo_ids = mentions[mentions['sentiment']==selection]['conversation_id'].unique()
     fig = sentiment_word_cloud(convo_sentiment[convo_sentiment['conversation_id'].isin(convo_ids)])
 
     word_cloud.pyplot(fig)
