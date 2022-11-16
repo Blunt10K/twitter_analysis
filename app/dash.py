@@ -100,14 +100,15 @@ sentiment_order = ['very negative','negative','neutral','positive','very positiv
 with sentiment:
     
     st.header('Sentiment of UNESCO in the last 2 weeks')
+    
     sentiment_dist, word_cloud = st.columns(2) 
-
+    sentiment_dist.markdown('The sentiment of Tweets mentioning UNESCO')
     to_plot = sentiment_distribution(mentions)
 
     # sentiment_dist.text('The')
     sentiment_dist.plotly_chart(to_plot)
-
     selection = word_cloud.radio('Sentiment category', sentiment_order, horizontal = True)
+    word_cloud.markdown(f'Popular words that elicit {selection} sentiment')
     convo_ids = mentions[mentions['sentiment']==selection]['conversation_id'].unique()
     fig = sentiment_word_cloud(convo_sentiment[convo_sentiment['conversation_id'].isin(convo_ids)])
 
