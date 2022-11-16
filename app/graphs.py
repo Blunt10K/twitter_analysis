@@ -40,14 +40,19 @@ def sentiment_word_cloud(df):
     return fig
 
 def engagement_time_series(df):
-    rf = df.groupby(['bucket','bucket_idx','hashtags'],as_index=False).sum(numeric_only=True).sort_values('bucket_idx')
-    to_plot = px.scatter(rf,x='like_count', y='retweet_count',size = 'reply_count', size_max = 55,color = 'quote_count',
-        animation_group='hashtags',animation_frame='bucket',width = 800, height = 500,hover_name='hashtags',
-        color_continuous_scale = px.colors.sequential.Agsunset, range_x=[-1000,rf['like_count'].max()+1000],
-        range_y=[-1000,rf['retweet_count'].max()+1000])
+    to_plot = df.rolling(7,on = 'created_at',min_periods = 1).mean()
 
-    to_plot.update_xaxes(zeroline = True)
-    to_plot.update_yaxes(zeroline = True)
+    to_plot = px.line(to_plot, x = 'created_at',y = ['likes','retweets'],template = template,
+        labels={"variable": "metric",'created_at':'date of tweet','value':'count'}
+    )
+    # rf = df.groupby(['bucket','bucket_idx','hashtags'],as_index=False).sum(numeric_only=True).sort_values('bucket_idx')
+    # to_plot = px.scatter(rf,x='like_count', y='retweet_count',size = 'reply_count', size_max = 55,color = 'quote_count',
+    #     animation_group='hashtags',animation_frame='bucket',width = 800, height = 500,hover_name='hashtags',
+    #     color_continuous_scale = px.colors.sequential.Agsunset, range_x=[-1000,rf['like_count'].max()+1000],
+    #     range_y=[-1000,rf['retweet_count'].max()+1000])
+
+    # to_plot.update_xaxes(zeroline = True)
+    # to_plot.update_yaxes(zeroline = True)
 
     return to_plot
 
@@ -77,9 +82,11 @@ def following_graph(df, fos):
 def sentiment_distribution(df):
     cat_orders = {'sentiment':['very negative','negative','neutral','positive','very positive']}
     colors = px.colors.qualitative.Plotly
-    colour_map = {'very negative':colors[1],'negative':colors[4],'neutral':colors[0],
-                  'positive':colors[5],'very positive':colors[2]}
+    neutral = px.colors.qualitative.Set1[8]
+    colour_map = {'very negative':colors[1],'negative':colors[4],'neutral':neutral,
+                  'positive':colors[5],'very positive':colors[0]}
 
+    title = "Sentiment distribution of UNESCO's mentions"
 
     return (px.histogram(df,x='sentiment',color='sentiment',category_orders=cat_orders,color_discrete_map=colour_map,template=template)
-            .update_layout(showlegend = False, title = 'Sentiment distribution of UNESCO',title_x=0.5))
+            .update_layout(showlegend = False, title = title,title_x=0.5))
