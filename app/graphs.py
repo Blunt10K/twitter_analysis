@@ -43,7 +43,8 @@ def engagement_time_series(df):
     to_plot = df.rolling(7,on = 'created_at',min_periods = 1).mean()
 
     to_plot = px.line(to_plot, x = 'created_at',y = ['likes','retweets'],template = template,
-        labels={"variable": "metric",'created_at':'date of tweet','value':'count'}
+        labels={"variable": "metric",'created_at':'date of tweet','value':'count'},
+        width = 800, height = 500
     )
     # rf = df.groupby(['bucket','bucket_idx','hashtags'],as_index=False).sum(numeric_only=True).sort_values('bucket_idx')
     # to_plot = px.scatter(rf,x='like_count', y='retweet_count',size = 'reply_count', size_max = 55,color = 'quote_count',
