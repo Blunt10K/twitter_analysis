@@ -40,7 +40,8 @@ def sentiment_word_cloud(df):
     return fig
 
 def engagement_time_series(df):
-    to_plot = df.rolling(7,on = 'created_at',min_periods = 1).mean()
+    to_plot = df.groupby('created_at',as_index=False).sum()
+    to_plot = to_plot.rolling(7,on = 'created_at',min_periods = 1).mean()
 
     to_plot = px.line(to_plot, x = 'created_at',y = ['likes','retweets'],template = template,
         labels={"variable": "metric",'created_at':'date of tweet','value':'count'},
@@ -64,6 +65,9 @@ def following_graph(df, fos):
             data=fos,
             get_position=['longitude', 'latitude'],
             get_color=[200, 30, 0, 50],
+            radius_scale=5,
+            radius_min_pixels=1,
+            radius_max_pixels=10,
             get_radius='radii')
 
     followers = pdk.Layer(
@@ -91,4 +95,4 @@ def sentiment_distribution(df):
 
     return (px.histogram(df,x='sentiment',color='sentiment',category_orders=cat_orders,
     color_discrete_map=colour_map,template=template,width = 800, height = 500)
-            .update_layout(showlegend = False, title = title,title_x=0.5))
+            .update_layout(showlegend = False))

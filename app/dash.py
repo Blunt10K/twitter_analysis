@@ -29,7 +29,6 @@ def connect_sheets():
 def load_data(_conn):
     engagement = preprocess_engagement(_conn, st.secrets['unes_tweets_url'])
     baseline = engagement.mean(numeric_only=True).round(1)
-    engagement = engagement.groupby('created_at',as_index=False).sum()
 
     hashtags = preprocess_hashtags(_conn, st.secrets['tweets_url'])
 
@@ -46,25 +45,23 @@ def load_data(_conn):
 conn = connect_sheets()
 
 engage, hashtags, baseline, places, fos, mentions, convo_sentiment = load_data(conn)
-engagement, following, sentiment = st.tabs(['Engagement', 'Following','Sentiment'])
+following, engagement,  sentiment, events = st.tabs(['Following','Engagement','Sentiment','Noteable events'])
 
-# st.session_state['start_date'] = analysis['created_at'].min()
-# st.session_state['end_date'] = analysis['created_at'].max()
+if 'sentiment_mkd' not in st.session_state:
+    st.session_state['sentiment_mkd'] = 'very negative' 
 
-# with st.sidebar:
-#     st.header("Engagement over the following period")
-#     start = st.date_input("Start",min(analysis['created_at']),min(analysis['created_at']),max(analysis['created_at']))
-#     end = st.date_input("End",max(analysis['created_at']),start + td(days=1),max(analysis['created_at']))
-    
+with following:
+    st.header("Geographical coverage of UNESCO's followers overlaid with field offices/institutions")
+    st.pydeck_chart(following_graph(places, fos))
 
 with engagement:
-    st.header('Engagement with UNESCO from:')
+    st.subheader('Select a period')
     start_date, end_date = st.columns(2)
 
     start = start_date.date_input("Start",min(engage['created_at']),min(engage['created_at']),
             max(engage['created_at']),key='start_date')
     end = end_date.date_input("End",max(engage['created_at']),min(engage['created_at']),max(engage['created_at']),key='end_date')
-
+    st.subheader('Engagement with UNESCO for this period')
     likes, retweets, replies, quotes = st.columns(4)
 
     start = dt.fromordinal(start.toordinal()).astimezone(pytz.utc)
@@ -75,10 +72,10 @@ with engagement:
 
     likes_metric, retweet_metric, reply_metric, quote_metric = calc_engagement_metrics(df, baseline)
 
-    likes.metric('Avg Likes',f'{likes_metric[0]}', f'{likes_metric[1]}')
-    retweets.metric('Avg Retweets',f'{retweet_metric[0]}', f'{retweet_metric[1]}')
-    replies.metric('Avg Replies',f'{reply_metric[0]}', f'{reply_metric[1]}')
-    quotes.metric('Avg Quotes',f'{quote_metric[0]}', f'{quote_metric[1]}')
+    likes.metric('Avg Likes',f'{likes_metric[0]}')
+    retweets.metric('Avg Retweets',f'{retweet_metric[0]}')
+    replies.metric('Avg Replies',f'{reply_metric[0]}')
+    quotes.metric('Avg Quotes',f'{quote_metric[0]}')
 
     col1, col2 = st.columns(2)
     
@@ -86,30 +83,31 @@ with engagement:
     to_plot = engagement_time_series(df)
 
 
-    col2.header('20 most popular hastags in this period')
+    col2.subheader('20 most popular hastags in this period')
     col2.pyplot(fig)
 
-    col1.header('Likes and retweets of this period')
+    col1.subheader('Likes and retweets of this period')
     col1.plotly_chart(to_plot)
-
-with following:
-    st.header("Geographical coverage of UNESCO's followers overlaid with field offices/institutions")
-    st.pydeck_chart(following_graph(places, fos))
 
 sentiment_order = ['very negative','negative','neutral','positive','very positive']
 with sentiment:
-    
-    st.header('Sentiment of UNESCO in the last 2 weeks')
-    
+        
     sentiment_dist, word_cloud = st.columns(2) 
-    sentiment_dist.markdown('### Sentiment of Tweets mentioning UNESCO')
+    sentiment_dist.markdown('### Sentiment of Tweets mentioning UNESCO in the last 2 weeks')
     to_plot = sentiment_distribution(mentions)
 
     # sentiment_dist.text('The')
     sentiment_dist.plotly_chart(to_plot)
-    selection = word_cloud.radio('Sentiment category', sentiment_order, horizontal = True)
+    
+    selection = word_cloud.radio('Sentiment category', sentiment_order, horizontal = True,
+            label_visibility='hidden')
     word_cloud.markdown(f'### Popular words that elicit {selection} sentiment')
     convo_ids = mentions[mentions['sentiment']==selection]['conversation_id'].unique()
     fig = sentiment_word_cloud(convo_sentiment[convo_sentiment['conversation_id'].isin(convo_ids)])
 
     word_cloud.pyplot(fig)
+
+with events:
+    pic1, pic2 = st.columns(2)
+    pic2.image('app/images/call_to_action.png', caption = 'Mobilisation of UNESCO staff')
+    pic1.image('app/images/malaysia.png', caption = 'Flooding in Malaysia')
