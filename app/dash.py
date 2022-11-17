@@ -77,17 +77,16 @@ with engagement:
     replies.metric('Avg Replies',f'{reply_metric[0]}')
     quotes.metric('Avg Quotes',f'{quote_metric[0]}')
 
-    col1, col2 = st.columns(2)
     
     fig = engagement_word_cloud(hashes)
     to_plot = engagement_time_series(df)
 
 
-    col2.subheader('20 most popular hastags in this period')
-    col2.pyplot(fig)
+    st.subheader('20 most popular hastags in this period')
+    st.pyplot(fig)
 
-    col1.subheader('Likes and retweets of this period')
-    col1.plotly_chart(to_plot)
+    st.subheader('Likes and retweets of this period')
+    st.plotly_chart(to_plot)
 
 sentiment_order = ['very negative','negative','neutral','positive','very positive']
 with sentiment:
